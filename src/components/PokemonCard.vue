@@ -1,11 +1,9 @@
 <template>
-  <div class="pokemon-card">
-    <!-- Usamos a função `getPokemonImage` para construir o URL da imagem -->
+  <router-link :to="{ name: 'PokemonDetail', params: { id: getPokemonId(pokemon.url) } }" class="pokemon-card">
     <img :src="getPokemonImage(pokemon.url)" :alt="pokemon.name" class="pokemon-image" />
     <h3 class="pokemon-name">{{ pokemon.name }}</h3>
-    <!-- Opcional: você pode exibir o número do Pokémon, extraindo-o da URL -->
     <p class="pokemon-number">#{{ getPokemonId(pokemon.url) }}</p>
-  </div>
+  </router-link>
 </template>
 
 <script setup>
@@ -13,14 +11,11 @@ defineProps({
   pokemon: Object,
 });
 
-// Função para extrair o ID do Pokémon a partir da URL
 const getPokemonId = (url) => {
-  // Extraímos o número que está no final da URL
   const parts = url.split('/');
   return parts[parts.length - 2];
 };
 
-// Função para construir o URL da imagem do Pokémon
 const getPokemonImage = (url) => {
   const id = getPokemonId(url);
   return `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${id}.png`;
@@ -37,6 +32,8 @@ const getPokemonImage = (url) => {
   border-radius: 10px;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
   width: 150px;
+  text-decoration: none;
+  color: inherit;
 }
 
 .pokemon-image {
