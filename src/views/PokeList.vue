@@ -1,169 +1,176 @@
 <template>
   <div class="pokedex-container">
-    <div class="header">
-      <img src="../assets/pokemon_logo.svg" />
-    </div>
-    <input
-      type="text"
-      v-model="searchQuery"
-      placeholder="Pesquise o pokemon da sua preferênia pelo nome ou pelo número..."
-      class="search-input"
-    />
-    <div class="amount">
-      <div class="pokes">
-        <div class="filters">
-          <div class="tipo-dropdown" @click.self="closeDropdown">
-            <button @click="toggleDropdown" class="dropdown-button">
-              {{
-                selectedType
-                  ? TypeTranslations[selectedType].text
-                  : "Tipo Pokemon"
-              }}
-            </button>
-            <div v-if="dropdownOpen" class="dropdown-content">
-              <div class="tipoPokemon" @click="clearTypeFilter">
-                <label>Todos</label>
+    <LoadingSpinner v-if="loading" />
+    <div v-else>
+      <div class="header">
+        <img src="../assets/pokemon_logo.svg" />
+      </div>
+      <input
+        type="text"
+        v-model="searchQuery"
+        placeholder="Pesquise o pokemon da sua preferênia pelo nome ou pelo número..."
+        class="search-input"
+      />
+      <div class="amount">
+        <div class="pokes">
+          <div class="filters">
+            <div class="tipo-dropdown" @click.self="closeDropdown">
+              <button @click="toggleDropdown" class="dropdown-button">
+                {{
+                  selectedType
+                    ? TypeTranslations[selectedType].text
+                    : "Tipo Pokemon"
+                }}
+              </button>
+              <div v-if="dropdownOpen" class="dropdown-content">
+                <div class="tipoPokemon" @click="clearTypeFilter">
+                  <label>Todos</label>
+                </div>
+                <div
+                  v-for="(translation, type) in TypeTranslations"
+                  :key="type"
+                  class="tipoPokemon"
+                  @click="toggleTypeFilter(type)"
+                >
+                  <label>{{ translation.text }}</label>
+                </div>
+              </div>
+            </div>
+            <div class="geracoes">
+              <div class="geracoesCheckbox" @click="toggleFilter('total')">
+                <img
+                  :src="filters.total ? checkedPokeball : uncheckedPokeball"
+                  alt="Pokébola"
+                  class="pokebola-icon"
+                />
+                <p class="filterText">Todos</p>
               </div>
               <div
-                v-for="(translation, type) in TypeTranslations"
-                :key="type"
-                class="tipoPokemon"
-                @click="toggleTypeFilter(type)"
+                class="geracoesCheckbox"
+                @click="toggleFilter('primeiraEvolucao')"
               >
-                <label>{{ translation.text }}</label>
+                <img
+                  :src="
+                    filters.primeiraEvolucao
+                      ? checkedPokeball
+                      : uncheckedPokeball
+                  "
+                  alt="Pokébola"
+                  class="pokebola-icon"
+                />
+                <p class="filterText">1°</p>
+              </div>
+              <div
+                class="geracoesCheckbox"
+                @click="toggleFilter('segundaEvolucao')"
+              >
+                <img
+                  :src="
+                    filters.segundaEvolucao
+                      ? checkedPokeball
+                      : uncheckedPokeball
+                  "
+                  alt="Pokébola"
+                  class="pokebola-icon"
+                />
+                <p class="filterText">2°</p>
+              </div>
+              <div
+                class="geracoesCheckbox"
+                @click="toggleFilter('ultimaEvolucao')"
+              >
+                <img
+                  :src="
+                    filters.ultimaEvolucao ? checkedPokeball : uncheckedPokeball
+                  "
+                  alt="Pokébola"
+                  class="pokebola-icon"
+                />
+                <p class="filterText">3°</p>
               </div>
             </div>
           </div>
-          <div class="geracoes">
-            <div class="geracoesCheckbox" @click="toggleFilter('total')">
-              <img
-                :src="filters.total ? checkedPokeball : uncheckedPokeball"
-                alt="Pokébola"
-                class="pokebola-icon"
-              />
-              <p class="filterText">Todos</p>
-            </div>
-            <div
-              class="geracoesCheckbox"
-              @click="toggleFilter('primeiraEvolucao')"
-            >
-              <img
-                :src="
-                  filters.primeiraEvolucao ? checkedPokeball : uncheckedPokeball
-                "
-                alt="Pokébola"
-                class="pokebola-icon"
-              />
-              <p class="filterText">1°</p>
-            </div>
-            <div
-              class="geracoesCheckbox"
-              @click="toggleFilter('segundaEvolucao')"
-            >
-              <img
-                :src="
-                  filters.segundaEvolucao ? checkedPokeball : uncheckedPokeball
-                "
-                alt="Pokébola"
-                class="pokebola-icon"
-              />
-              <p class="filterText">2°</p>
-            </div>
-            <div
-              class="geracoesCheckbox"
-              @click="toggleFilter('ultimaEvolucao')"
-            >
-              <img
-                :src="
-                  filters.ultimaEvolucao ? checkedPokeball : uncheckedPokeball
-                "
-                alt="Pokébola"
-                class="pokebola-icon"
-              />
-              <p class="filterText">3°</p>
-            </div>
+          <img
+            src="../assets/sort.png"
+            alt="More"
+            class="more-icon"
+            @click="toggleGenerations"
+            style="cursor: pointer"
+          />
+          <div class="amount-teste" :class="{ show: showGenerations }">
+            <button class="button-generations" @click="setGeneration(0, 151)">
+              Geração I
+            </button>
+            <button class="button-generations" @click="setGeneration(151, 99)">
+              Geração II
+            </button>
+            <button class="button-generations" @click="setGeneration(252, 134)">
+              Geração III
+            </button>
+            <button class="button-generations" @click="setGeneration(387, 106)">
+              Geração IV
+            </button>
+            <button class="button-generations" @click="setGeneration(494, 155)">
+              Geração V
+            </button>
+            <button class="button-generations" @click="setGeneration(650, 71)">
+              Geração VI
+            </button>
+            <button class="button-generations" @click="setGeneration(722, 87)">
+              Geração VII
+            </button>
+            <button class="button-generations" @click="setGeneration(810, 88)">
+              Geração VIII
+            </button>
+            <button class="button-generations" @click="setGeneration(899, 111)">
+              Geração IX
+            </button>
+          </div>
+          <div class="pokemon-cards">
+            <PokemonCard
+              v-for="(pokemon, index) in filteredPokemons"
+              :key="index"
+              :pokemon="pokemon"
+              @selectPokemon="selectPokemon"
+            />
           </div>
         </div>
-        <img
-          src="../assets/sort.png"
-          alt="More"
-          class="more-icon"
-          @click="toggleGenerations"
-          style="cursor: pointer"
-        />
-        <div class="amount-teste" :class="{ show: showGenerations }">
-          <button class="button-generations" @click="setGeneration(0, 151)">
-            Geração I
-          </button>
-          <button class="button-generations" @click="setGeneration(151, 99)">
-            Geração II
-          </button>
-          <button class="button-generations" @click="setGeneration(252, 134)">
-            Geração III
-          </button>
-          <button class="button-generations" @click="setGeneration(387, 106)">
-            Geração IV
-          </button>
-          <button class="button-generations" @click="setGeneration(494, 155)">
-            Geração V
-          </button>
-          <button class="button-generations" @click="setGeneration(650, 71)">
-            Geração VI
-          </button>
-          <button class="button-generations" @click="setGeneration(722, 87)">
-            Geração VII
-          </button>
-          <button class="button-generations" @click="setGeneration(810, 88)">
-            Geração VIII
-          </button>
-          <button class="button-generations" @click="setGeneration(899, 111)">
-            Geração IX
-          </button>
-        </div>
-        <div class="pokemon-cards">
-          <PokemonCard
-            v-for="(pokemon, index) in filteredPokemons"
-            :key="index"
-            :pokemon="pokemon"
-            @selectPokemon="selectPokemon"
-          />
-        </div>
-      </div>
 
-      <div class="pokes-details">
-        <p class="pokes-details-title">
-          {{ selectedPokemon?.name?.toUpperCase() }}
-        </p>
-        <img
-          class="pokes-details-img"
-          :src="selectedPokemon?.img"
-          :alt="selectedPokemon?.name"
-        />
-        <div class="pokes-details-info">
-          <p class="pokes-details-text">
-            <strong>HP:</strong> {{ selectedPokemon?.stats?.hp }}
+        <div class="pokes-details">
+          <p class="pokes-details-title">
+            {{ selectedPokemon?.name?.toUpperCase() }}
           </p>
-          <p class="pokes-details-text">
-            <strong>Ataque:</strong> {{ selectedPokemon?.stats?.attack }}
-          </p>
-        </div>
-        <div class="pokes-details-info">
-          <p class="pokes-details-text">
-            <strong>Defesa:</strong> {{ selectedPokemon?.stats?.defense }}
-          </p>
-          <p class="pokes-details-text">
-            <strong>Velocidade:</strong> {{ selectedPokemon?.stats?.speed }}
-          </p>
-        </div>
-        <div class="pokes-details-info">
-          <p class="pokes-details-text">
-            <strong>Ataque Especial:</strong>
-            {{ selectedPokemon?.stats?.special_attack }}
-          </p>
-          <p class="pokes-details-text">
-            <strong>Defesa Especial:</strong>
-            {{ selectedPokemon?.stats?.special_defense }}
-          </p>
+          <img
+            class="pokes-details-img"
+            :src="selectedPokemon?.img"
+            :alt="selectedPokemon?.name"
+          />
+          <div class="pokes-details-info">
+            <p class="pokes-details-text">
+              <strong>HP:</strong> {{ selectedPokemon?.stats?.hp }}
+            </p>
+            <p class="pokes-details-text">
+              <strong>Ataque:</strong> {{ selectedPokemon?.stats?.attack }}
+            </p>
+          </div>
+          <div class="pokes-details-info">
+            <p class="pokes-details-text">
+              <strong>Defesa:</strong> {{ selectedPokemon?.stats?.defense }}
+            </p>
+            <p class="pokes-details-text">
+              <strong>Velocidade:</strong> {{ selectedPokemon?.stats?.speed }}
+            </p>
+          </div>
+          <div class="pokes-details-info">
+            <p class="pokes-details-text">
+              <strong>Ataque Especial:</strong>
+              {{ selectedPokemon?.stats?.special_attack }}
+            </p>
+            <p class="pokes-details-text">
+              <strong>Defesa Especial:</strong>
+              {{ selectedPokemon?.stats?.special_defense }}
+            </p>
+          </div>
         </div>
       </div>
     </div>
@@ -175,7 +182,7 @@ import { ref, onMounted, watch, computed } from "vue";
 import PokemonCard from "../components/PokemonCard.vue";
 import { usePokemon } from "../composables/usePokemon";
 import { evolutions, TypeTranslations } from "../constants/constants";
-
+import LoadingSpinner from "../components/Loading.vue";
 import checkedPokeball from "../assets/pokebola_checked.svg";
 import uncheckedPokeball from "../assets/pokebola_deschecked.svg";
 
@@ -611,7 +618,7 @@ const toggleGenerations = () => {
   .button-generations {
     flex: 1 1 100%;
   }
-  .pokes-details{
+  .pokes-details {
     margin: 0px 0px 8px 0px;
   }
 }
