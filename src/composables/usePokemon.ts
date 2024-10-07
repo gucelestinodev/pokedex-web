@@ -43,6 +43,7 @@ export function usePokemon(amoutStartQuery: Ref<string>, amountContQuery: Ref<st
               special_defense: pokemonData.stats.find((s: any) => s.stat.name === 'special-defense')?.base_stat || 0,
               speed: pokemonData.stats.find((s: any) => s.stat.name === 'speed')?.base_stat || 0,
             },
+            img: pokemonData.sprites.other.dream_world.front_default,
           };
         })
       );

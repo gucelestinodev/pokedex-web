@@ -6,6 +6,7 @@ export interface Pokemon {
   egg_groups: string[];
   types: string[];
   stats: PokemonStats;
+  img: string;
 }
 
 export interface PokemonStats {

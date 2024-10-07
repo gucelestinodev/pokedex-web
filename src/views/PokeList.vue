@@ -12,19 +12,22 @@
     <div class="amount">
       <div class="pokes">
         <div class="filters">
-          <div class="tipo-dropdown">
+          <div class="tipo-dropdown" @click.self="closeDropdown">
             <button @click="toggleDropdown" class="dropdown-button">
               {{
                 selectedType
-                  ? eggGroupTranslations[selectedType].text
+                  ? TypeTranslations[selectedType].text
                   : "Tipo Pokemon"
               }}
             </button>
             <div v-if="dropdownOpen" class="dropdown-content">
+              <div class="tipoPokemon" @click="clearTypeFilter">
+                <label>Todos</label>
+              </div>
               <div
-                v-for="(translation, type) in eggGroupTranslations"
+                v-for="(translation, type) in TypeTranslations"
                 :key="type"
-                class="tipoCheckbox"
+                class="tipoPokemon"
                 @click="toggleTypeFilter(type)"
               >
                 <label>{{ translation.text }}</label>
@@ -32,7 +35,6 @@
             </div>
           </div>
           <div class="geracoes">
-            <p class="filterTitle">Evoluções:</p>
             <div class="geracoesCheckbox" @click="toggleFilter('total')">
               <img
                 :src="filters.total ? checkedPokeball : uncheckedPokeball"
@@ -81,19 +83,42 @@
               <p class="filterText">3°</p>
             </div>
           </div>
-          <div class="amount">
-            <input
-              type="text"
-              v-model="amoutStartQuery"
-              class="amount-pokemon"
-            />
-            <p class="amount-text">até</p>
-            <input
-              type="text"
-              v-model="amountContQuery"
-              class="amount-pokemon"
-            />
-          </div>
+        </div>
+        <img
+          src="../assets/sort.png"
+          alt="More"
+          class="more-icon"
+          @click="toggleGenerations"
+          style="cursor: pointer"
+        />
+        <div class="amount-teste" :class="{ show: showGenerations }">
+          <button class="button-generations" @click="setGeneration(0, 151)">
+            Geração I
+          </button>
+          <button class="button-generations" @click="setGeneration(151, 99)">
+            Geração II
+          </button>
+          <button class="button-generations" @click="setGeneration(252, 134)">
+            Geração III
+          </button>
+          <button class="button-generations" @click="setGeneration(387, 106)">
+            Geração IV
+          </button>
+          <button class="button-generations" @click="setGeneration(494, 155)">
+            Geração V
+          </button>
+          <button class="button-generations" @click="setGeneration(650, 71)">
+            Geração VI
+          </button>
+          <button class="button-generations" @click="setGeneration(722, 87)">
+            Geração VII
+          </button>
+          <button class="button-generations" @click="setGeneration(810, 88)">
+            Geração VIII
+          </button>
+          <button class="button-generations" @click="setGeneration(899, 111)">
+            Geração IX
+          </button>
         </div>
         <div class="pokemon-cards">
           <PokemonCard
@@ -105,12 +130,41 @@
         </div>
       </div>
 
-      <div class="pokes">
-        <h2>{{ selectedPokemon?.name?.toUpperCase() }}</h2>
-        <p><strong>HP:</strong> {{ selectedPokemon?.stats?.hp }}</p>
-        <p><strong>Ataque:</strong> {{ selectedPokemon?.stats?.attack }}</p>
-        <p><strong>Defesa:</strong> {{ selectedPokemon?.stats?.defense }}</p>
-        <p><strong>Velocidade:</strong> {{ selectedPokemon?.stats?.speed }}</p>
+      <div class="pokes-details">
+        <p class="pokes-details-title">
+          {{ selectedPokemon?.name?.toUpperCase() }}
+        </p>
+        <img
+          class="pokes-details-img"
+          :src="selectedPokemon?.img"
+          :alt="selectedPokemon?.name"
+        />
+        <div class="pokes-details-info">
+          <p class="pokes-details-text">
+            <strong>HP:</strong> {{ selectedPokemon?.stats?.hp }}
+          </p>
+          <p class="pokes-details-text">
+            <strong>Ataque:</strong> {{ selectedPokemon?.stats?.attack }}
+          </p>
+        </div>
+        <div class="pokes-details-info">
+          <p class="pokes-details-text">
+            <strong>Defesa:</strong> {{ selectedPokemon?.stats?.defense }}
+          </p>
+          <p class="pokes-details-text">
+            <strong>Velocidade:</strong> {{ selectedPokemon?.stats?.speed }}
+          </p>
+        </div>
+        <div class="pokes-details-info">
+          <p class="pokes-details-text">
+            <strong>Ataque Especial:</strong>
+            {{ selectedPokemon?.stats?.special_attack }}
+          </p>
+          <p class="pokes-details-text">
+            <strong>Defesa Especial:</strong>
+            {{ selectedPokemon?.stats?.special_defense }}
+          </p>
+        </div>
       </div>
     </div>
   </div>
@@ -120,7 +174,7 @@
 import { ref, onMounted, watch, computed } from "vue";
 import PokemonCard from "../components/PokemonCard.vue";
 import { usePokemon } from "../composables/usePokemon";
-import { evolutions, eggGroupTranslations } from "../constants/constants";
+import { evolutions, TypeTranslations } from "../constants/constants";
 
 import checkedPokeball from "../assets/pokebola_checked.svg";
 import uncheckedPokeball from "../assets/pokebola_deschecked.svg";
@@ -131,6 +185,7 @@ const amountContQuery = ref("151");
 const dropdownOpen = ref(false);
 const selectedType = ref(null);
 const selectedPokemon = ref(null);
+const showGenerations = ref(false);
 const filters = ref({
   total: true,
   primeiraEvolucao: false,
@@ -143,10 +198,20 @@ const toggleDropdown = () => {
   dropdownOpen.value = !dropdownOpen.value;
 };
 
+const closeDropdown = () => {
+  dropdownOpen.value = false;
+};
+
 const toggleTypeFilter = (type) => {
   selectedType.value = type;
   filters.value.types = [type];
-  dropdownOpen.value = false;
+  closeDropdown();
+};
+
+const clearTypeFilter = () => {
+  selectedType.value = null;
+  filters.value.types = [];
+  closeDropdown();
 };
 
 const { pokemons, loading, fetchPokemons } = usePokemon(
@@ -167,10 +232,14 @@ const selectPokemon = (id) => {
   }
 };
 
-
 onMounted(async () => {
   await fetchPokemons();
-
+  document.addEventListener("click", (event) => {
+    const dropdown = document.querySelector(".tipo-dropdown");
+    if (!dropdown.contains(event.target)) {
+      closeDropdown();
+    }
+  });
   if (pokemons.value.length > 0) {
     selectPokemon(1);
   } else {
@@ -191,10 +260,8 @@ const filteredPokemons = computed(() => {
   let filtered = pokemons.value;
 
   if (searchQuery.value) {
-    filtered = filtered.filter(
-      (pokemon) =>
-        pokemon.name.toLowerCase().includes(searchQuery.value.toLowerCase()) ||
-        pokemon.url.split("/").filter(Boolean).pop().includes(searchQuery.value)
+    filtered = filtered.filter((pokemon) =>
+      pokemon.name.toLowerCase().includes(searchQuery.value.toLowerCase())
     );
   }
 
@@ -234,9 +301,85 @@ const filteredPokemons = computed(() => {
 watch([amoutStartQuery, amountContQuery], () => {
   fetchPokemons();
 });
+
+const setGeneration = (start, end) => {
+  amoutStartQuery.value = start;
+  amountContQuery.value = end;
+};
+
+const toggleGenerations = () => {
+  showGenerations.value = !showGenerations.value;
+};
 </script>
 
 <style scoped>
+.amount-teste {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-around;
+  overflow: hidden;
+  max-height: 0;
+  opacity: 0;
+  transition: max-height 1.9s ease, opacity 2s ease;
+}
+
+.amount-teste.show {
+  max-height: 500px;
+  opacity: 1;
+}
+
+.button-generations {
+  width: 100%;
+  padding: 6px;
+  border: none;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 500;
+  background-color: #2d70b7;
+  color: #ffffff;
+  margin: 4px;
+  flex: 1 1 30%;
+}
+
+.pokes-details {
+  display: flex;
+  flex-direction: column;
+  border: 3px solid #2d70b7;
+  padding: 16px;
+  border-radius: 12px;
+  align-items: center;
+  margin-left: 8px;
+}
+
+.pokes-details-img {
+  max-width: 200px;
+}
+
+.pokes-details-info {
+  display: flex;
+  flex-direction: row;
+  width: 100%;
+  background-color: #2d70b7;
+  padding: 6px;
+  margin-top: 12px;
+  border-radius: 12px;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.pokes-details-title {
+  font-size: 24px;
+  margin: 0;
+  font-weight: 700;
+  color: #333;
+}
+
+.pokes-details-text {
+  font-size: 16px;
+  margin: 0;
+  color: #ffffff;
+}
+
 .amount {
   display: flex;
   flex-direction: row;
@@ -280,8 +423,8 @@ watch([amoutStartQuery, amountContQuery], () => {
   padding: 10px;
   font-size: 1rem;
   border: 3px solid #2d70b7;
-  border-radius: 5px;
-  min-width: 68.5%;
+  border-radius: 8px;
+  width: 80%;
   margin: 28px 0px;
   box-shadow: 0px 8px 16px 0px rgba(0, 0, 0, 0.1);
 }
@@ -339,12 +482,13 @@ watch([amoutStartQuery, amountContQuery], () => {
   font-size: 14px;
   margin: 0px 0px 0px 8px;
   font-weight: 600;
+  color: #ffffff;
 }
 
 .filterText {
-  font-size: 16px;
+  font-size: 14px;
   margin: 0;
-  color: #000000;
+  color: #ffffff;
   font-weight: 500;
 }
 
@@ -361,23 +505,33 @@ watch([amoutStartQuery, amountContQuery], () => {
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  padding: 0px 12px;
+  padding: 0px 8px;
 }
 
 .geracoes {
   display: flex;
   flex-direction: row;
-  background-color: #ffffff;
-  border-radius: 8px;
+  background-color: #2d70b7;
   align-items: center;
+  border-radius: 8px;
+  padding: 4px 0px;
+  justify-content: center;
   box-shadow: 0px 8px 16px 0px rgba(0, 0, 0, 0.2);
 }
 
 .pokebola-icon {
-  width: 20px;
-  height: 20px;
+  width: 22.5px;
+  height: 22.5px;
   vertical-align: middle;
   cursor: pointer;
+}
+
+.more-icon {
+  width: 18px;
+  height: 18px;
+  vertical-align: middle;
+  cursor: pointer;
+  margin-bottom: 16px;
 }
 
 .tipo-dropdown {
@@ -386,11 +540,10 @@ watch([amoutStartQuery, amountContQuery], () => {
 }
 
 .dropdown-button {
-  background-color: #ffffff;
-  color: black;
-  padding: 16px 32px;
-  margin-top: 12px;
-  font-size: 16px;
+  background-color: #2d70b7;
+  color: #ffffff;
+  padding: 12px 32px;
+  font-size: 14px;
   border: none;
   border-radius: 8px;
   font-weight: 600;
@@ -407,7 +560,7 @@ watch([amoutStartQuery, amountContQuery], () => {
   cursor: pointer;
 }
 
-.dropdown-content .tipoCheckbox {
+.dropdown-content .tipoPokemon {
   color: black;
   padding: 12px 16px;
   text-decoration: none;
@@ -415,7 +568,51 @@ watch([amoutStartQuery, amountContQuery], () => {
   cursor: pointer;
 }
 
-.dropdown-content .tipoCheckbox:hover {
+.dropdown-content .tipoPokemon:hover {
   background-color: #f1f1f1;
+}
+
+@media (max-width: 950px) {
+  .pokemon-cards {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  .filters {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    margin-bottom: 16px;
+  }
+  .tipo-dropdown {
+    margin-bottom: 12px;
+  }
+}
+
+@media (max-width: 600px) {
+  .pokemon-cards {
+    grid-template-columns: 1fr;
+  }
+  .pokes-details-img {
+    max-width: 100px;
+  }
+}
+
+@media (max-width: 768px) {
+  .button-generations {
+    flex: 1 1 45%;
+  }
+}
+
+@media (max-width: 480px) {
+  .amount {
+    display: flex;
+    flex-direction: column-reverse;
+    align-items: center;
+  }
+  .button-generations {
+    flex: 1 1 100%;
+  }
+  .pokes-details{
+    margin: 0px 0px 8px 0px;
+  }
 }
 </style>

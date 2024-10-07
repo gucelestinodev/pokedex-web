@@ -26,7 +26,7 @@
 
 <script setup>
 import { computed } from "vue";
-import { eggGroupTranslations } from "../constants/constants";
+import { TypeTranslations } from "../constants/constants";
 const props = defineProps({
   pokemon: Object,
 });
@@ -43,14 +43,14 @@ const getPokemonImage = (id) => {
 const translateEggGroups = (eggGroups) => {
   return (
     eggGroups?.map((group) => {
-      const translation = eggGroupTranslations[group];
+      const translation = TypeTranslations[group];
       return translation ? translation : { text: group, color: "#ccc" };
     }) || []
   );
 };
 
 const translatedEggGroups = computed(() =>
-  translateEggGroups(props.pokemon?.egg_groups)
+  translateEggGroups(props.pokemon?.types)
 );
 </script>
 
@@ -78,6 +78,7 @@ const translatedEggGroups = computed(() =>
   display: flex;
   flex-direction: column;
   background-color: white;
+  max-width: 100%;
   align-items: center;
   border-radius: 10px;
   padding: 6px;
@@ -91,8 +92,7 @@ const translatedEggGroups = computed(() =>
   display: flex;
   justify-content: center;
   align-items: center;
-  width: 200px;
-  padding: 2px;
+  width: 100%;
   border-radius: 8px;
   position: relative;
 }
