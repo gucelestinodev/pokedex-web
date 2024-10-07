@@ -1,8 +1,8 @@
-import { ref } from 'vue';
+import { ref, Ref } from 'vue';
 import api from '../services/api';
-import { Pokemon, PokemonDetails, PokemonStats } from '../types/pokemon'; // Importe a interface correta
+import { Pokemon, PokemonDetails, PokemonStats } from '../types/pokemon';
 
-export function usePokemon() {
+export function usePokemon(amoutStartQuery: Ref<string>, amountContQuery: Ref<string>) {
   const pokemons = ref<Pokemon[]>([]);
   const loading = ref(false);
   const pokemonDetails = ref<PokemonDetails | null>(null);
@@ -10,8 +10,44 @@ export function usePokemon() {
   const fetchPokemons = async () => {
     loading.value = true;
     try {
-      const response = await api.get('/pokemon?limit=30');
-      pokemons.value = response.data.results;
+      const offset = parseInt(amoutStartQuery.value) || 0;
+      const limit = parseInt(amountContQuery.value) || 151;
+
+      const response = await api.get(`https://pokeapi.co/api/v2/pokemon?limit=${limit}&offset=${offset}`);
+      const pokemonList = response.data.results;
+
+      const detailedPokemons = await Promise.all(
+        pokemonList.map(async (pokemon: any) => {
+          const id = pokemon.url.split('/').filter(Boolean).pop();
+
+          // Fetch data from /pokemon-species/{id}
+          const speciesResponse = await api.get(`https://pokeapi.co/api/v2/pokemon-species/${id}`);
+          const speciesData = speciesResponse.data;
+
+          // Fetch data from /pokemon/{id} for stats and types
+          const pokemonResponse = await api.get(`https://pokeapi.co/api/v2/pokemon/${id}`);
+          const pokemonData = pokemonResponse.data;
+
+          return {
+            id: id,
+            name: pokemon.name,
+            url: pokemon.url,
+            color: speciesData.color.name,
+            egg_groups: speciesData.egg_groups.map((group: any) => group.name),
+            types: pokemonData.types.map((t: any) => t.type.name), // Extracting types from /pokemon/{id}
+            stats: {
+              hp: pokemonData.stats.find((s: any) => s.stat.name === 'hp')?.base_stat || 0,
+              attack: pokemonData.stats.find((s: any) => s.stat.name === 'attack')?.base_stat || 0,
+              defense: pokemonData.stats.find((s: any) => s.stat.name === 'defense')?.base_stat || 0,
+              special_attack: pokemonData.stats.find((s: any) => s.stat.name === 'special-attack')?.base_stat || 0,
+              special_defense: pokemonData.stats.find((s: any) => s.stat.name === 'special-defense')?.base_stat || 0,
+              speed: pokemonData.stats.find((s: any) => s.stat.name === 'speed')?.base_stat || 0,
+            },
+          };
+        })
+      );
+
+      pokemons.value = detailedPokemons;
     } catch (error) {
       console.error('Erro ao buscar pokemons', error);
     } finally {

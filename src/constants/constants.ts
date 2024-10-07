@@ -1,0 +1,47 @@
+export const evolutions = {
+    primeiraEvolucao: [
+        1, 4, 7, 10, 13, 16, 19, 21, 23, 25, 27, 29, 32, 35, 37, 39, 41, 43, 46, 48,
+        50, 52, 54, 56, 58, 60, 63, 66, 69, 72, 74, 77, 79, 81, 84, 86, 88, 90, 92,
+        96, 98, 100, 102, 104, 109, 111, 116, 118, 120, 129, 133, 138, 140, 147,
+    ],
+    segundaEvolucao: [
+        2, 5, 8, 11, 14, 17, 20, 22, 24, 26, 28, 31, 34, 36, 38, 40, 42, 44, 47, 49,
+        51, 53, 55, 57, 59, 61, 64, 67, 70, 73, 75, 78, 80, 82, 85, 87, 89, 91, 93,
+        94, 97, 99, 101, 103, 105, 110, 112, 114, 117, 119, 121, 130, 134, 139, 141,
+        148,
+    ],
+    ultimaEvolucao: [
+        3, 6, 9, 12, 15, 18, 30, 33, 45, 65, 68, 71, 76, 83, 95, 106, 107, 108, 113,
+        115, 122, 123, 124, 125, 126, 127, 128, 131, 132, 135, 136, 137, 142, 143,
+        144, 145, 146, 149, 150, 151,
+    ],
+};
+
+export const eggGroupTranslations = {
+    monster: { text: "Monstro", color: "#E8B2E9" },
+    normal: { text: "Normal", color: "#FFCD83" },
+    fire: { text: "Fogo", color: "#A8F08A" },
+    water1: { text: "Água", color: "#91AFFF" },
+    plant: { text: "Grama", color: "#A8F08A" },
+    electric: { text: "Elétrico", color: "#FFCD83" },
+    ice: { text: "Gelo", color: "#B2ABCA" },
+    fighting: { text: "Lutador", color: "#A8F08A" },
+    poison: { text: "Venenoso", color: "#FF994D" },
+    ground: { text: "Terra", color: "#FFCD83" },
+    flying: { text: "Voador", color: "#91AFFF" },
+    psychic: { text: "Psíquico", color: "#FF994D" },
+    bug: { text: "Inseto", color: "#5ABA48" },
+    rock: { text: "Pedra", color: "#B2ABCA" },
+    ghost: { text: "Fantasma", color: "#B2ABCA" },
+    dragon: { text: "Dragão", color: "#E06563" },
+    dark: { text: "Sombrio", color: "#000000" },
+    steel: { text: "Aço", color: "#B2ABCA" },
+    fairy: { text: "Fada", color: "#FEACD8" },
+    "no-eggs": { text: "Sem Tipo", color: "#B2ABCA" },
+    humanshape: { text: "Quase Humano", color: "#FFCD83" },
+    water2: { text: "Água", color: "#91AFFF" },
+    water3: { text: "Água", color: "#91AFFF" },
+    mineral: { text: "Mineral", color: "#FFCD83" },
+    indeterminante: { text: "Indeterminante", color: "#B2ABCA" },
+    ditto: { text: "Dito", color: "#B2ABCA" },
+};

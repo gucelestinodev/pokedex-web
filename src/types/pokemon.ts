@@ -1,6 +1,11 @@
 export interface Pokemon {
+  id: string;
   name: string;
   url: string;
+  color: string;
+  egg_groups: string[];
+  types: string[];
+  stats: PokemonStats;
 }
 
 export interface PokemonStats {
